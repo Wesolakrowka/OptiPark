@@ -1,5 +1,4 @@
 import User from "../model/userModel.js";
-import DocCategorias from "../model/docCatModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sequelize from "../config/database.js";
@@ -159,7 +158,59 @@ const UserController = {
       res.status(500).json({ error: err500 });
     }
   },
+  registerUser: async (req, res) => {
+    try {
+      const { u_nome, u_email, u_password, u_confirm_password } = req.body;
 
+      // Walidacja wymaganych pól
+      if (!u_nome || !u_email || !u_password || !u_confirm_password) {
+        return res
+          .status(400)
+          .json({ error: "Todos os campos são necessários" });
+      }
+
+      // Sprawdzenie zgodności hasła i potwierdzenia
+      if (u_password !== u_confirm_password) {
+        return res.status(400).json({ error: "Palavra-passe não corresponde" });
+      }
+
+      // Sprawdzenie, czy e-mail już istnieje
+      const existingUser = await User.findOne({ where: { u_email } });
+      if (existingUser) {
+        return res
+          .status(400)
+          .json({ error: "Este e-mail já se encontra em uso" });
+      }
+
+      // Hashowanie hasła
+      const hashPass = await bcrypt.hash(u_password, 10);
+
+      // Tworzenie nowego użytkownika
+      const newUser = await User.create({
+        u_nome,
+        u_email,
+        u_password: hashPass,
+      });
+
+      // Generowanie tokenu JWT
+      const token = jwt.sign({ u_id: newUser.u_id }, process.env.jwtKEY, {
+        expiresIn: "1d", // Token ważny przez 1 dzień
+      });
+
+      res.status(201).json({
+        message: "Usuário registrado com sucesso",
+        user: {
+          u_nome: newUser.u_nome,
+          u_email: newUser.u_email,
+        },
+        token,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  
   loginUser: async (req, res) => {
     try {
       const { u_email, u_password } = req.body;
