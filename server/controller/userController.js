@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import sequelize from "../config/database.js";
 import "dotenv/config";
 
-const err500 = "Erro Interno de Servidor";
+const err500 = "Internal Server Error";
 
 const UserController = {
   getAllUsers: async (req, res) => {
@@ -217,24 +217,20 @@ const UserController = {
 
       if (!u_email || !u_password) {
         return res.status(400).json({
-          error: "E-mail e Palavra-passe são necessários",
+          error: "Email and Password are required",
         });
       }
 
       const user = await User.findOne({ where: { u_email } });
 
       if (!user) {
-        return res
-          .status(401)
-          .json({ error: "E-mail ou Palavra-passe inválidos" });
+        return res.status(401).json({ error: "Invalid Email or Password" });
       }
 
       const validPass = await bcrypt.compare(u_password, user.u_password);
 
       if (!validPass) {
-        return res
-          .status(401)
-          .json({ error: "E-mail ou Palavra-passe inválidos" });
+        return res.status(401).json({ error: "Invalid Email or Password" });
       }
 
       const token = jwt.sign({ u_id: user.u_id }, process.env.jwtKEY);
