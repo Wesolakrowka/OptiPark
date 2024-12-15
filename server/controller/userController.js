@@ -34,26 +34,7 @@ const UserController = {
     }
   },
 
-  getDoctors: async (req, res) => {
-    try {
-      const doctors = await User.findAll({
-        where: { u_role: 1 },
-        include: [
-          {
-            model: DocCategorias,
-            attributes: ["doc_cat_name"],
-            required: false,
-          },
-        ],
-        raw: true,
-      });
 
-      res.status(200).json({ doctors });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err500 });
-    }
-  },
 
   getUserByName: async (req, res) => {
     try {
@@ -158,59 +139,6 @@ const UserController = {
       res.status(500).json({ error: err500 });
     }
   },
-  registerUser: async (req, res) => {
-    try {
-      const { u_nome, u_email, u_password, u_confirm_password } = req.body;
-
-      // Walidacja wymaganych pól
-      if (!u_nome || !u_email || !u_password || !u_confirm_password) {
-        return res
-          .status(400)
-          .json({ error: "Todos os campos são necessários" });
-      }
-
-      // Sprawdzenie zgodności hasła i potwierdzenia
-      if (u_password !== u_confirm_password) {
-        return res.status(400).json({ error: "Palavra-passe não corresponde" });
-      }
-
-      // Sprawdzenie, czy e-mail już istnieje
-      const existingUser = await User.findOne({ where: { u_email } });
-      if (existingUser) {
-        return res
-          .status(400)
-          .json({ error: "Este e-mail já se encontra em uso" });
-      }
-
-      // Hashowanie hasła
-      const hashPass = await bcrypt.hash(u_password, 10);
-
-      // Tworzenie nowego użytkownika
-      const newUser = await User.create({
-        u_nome,
-        u_email,
-        u_password: hashPass,
-      });
-
-      // Generowanie tokenu JWT
-      const token = jwt.sign({ u_id: newUser.u_id }, process.env.jwtKEY, {
-        expiresIn: "1d", // Token ważny przez 1 dzień
-      });
-
-      res.status(201).json({
-        message: "Usuário registrado com sucesso",
-        user: {
-          u_nome: newUser.u_nome,
-          u_email: newUser.u_email,
-        },
-        token,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err500 });
-    }
-  },
-  
   loginUser: async (req, res) => {
     try {
       const { u_email, u_password } = req.body;
@@ -233,9 +161,47 @@ const UserController = {
         return res.status(401).json({ error: "Invalid Email or Password" });
       }
 
-      const token = jwt.sign({ u_id: user.u_id }, process.env.jwtKEY);
+      const token = jwt.sign({ u_id: user.u_id }, process.env.jwtKEY, {
+        expiresIn: "1d", // Token ważny przez 1 dzień
+      });
 
       res.status(200).json({ user, token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  registerUser: async (req, res) => {
+    try {
+      const { u_nome, u_email, u_password, u_role } = req.body;
+
+      if (!u_nome || !u_email || !u_password || !u_role) {
+        return res.status(400).json({
+          error: "Name, Email, Password, and Role are required",
+        });
+      }
+
+      const existingUser = await User.findOne({ where: { u_email } });
+
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already in use" });
+      }
+
+      const hashedPassword = await bcrypt.hash(u_password, 10);
+
+      const newUser = await User.create({
+        u_nome,
+        u_email,
+        u_password: hashedPassword,
+        u_role,
+      });
+
+      const token = jwt.sign({ u_id: newUser.u_id }, process.env.jwtKEY, {
+        expiresIn: "1d", // Token ważny przez 1 dzień
+      });
+
+      res.status(201).json({ user: newUser, token });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
