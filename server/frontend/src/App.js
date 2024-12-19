@@ -1,12 +1,14 @@
 import React from 'react';
-import Auth from './Auth';
+import Navbar from './components/Navbar';
+import Home from './components/Home';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <Auth />
-    </div>
+    <>
+      <Navbar />
+      <Home />
+    </>
   );
-}
+};
 
 export default App;
