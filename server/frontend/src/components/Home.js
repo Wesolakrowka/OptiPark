@@ -20,7 +20,7 @@ const Home = () => {
           </button>
         </div>
         <div className="hero-right">
-          <img src={image1} alt="hero" />
+          <img src={image1} alt="hero" className="hero-image" />
         </div>
       </div>
 
@@ -32,7 +32,9 @@ const Home = () => {
           <img src={image2} alt="about" />
         </div>
         <div className="about-right">
-          <span>At <strong className="gradient">Optipark</strong>, we specialize in helping businesses find the ideal location to thrive...</span>
+          <span>
+            At <strong className="gradient">Optipark</strong>, we specialize in helping businesses find the ideal location to thrive. By understanding the unique needs of each client, we offer tailored recommendations for business parks that align with their specific criteria. Our goal is to simplify the decision-making process, allowing companies to focus on growth while we provide insights into the best environments to host their operations. Let us help you find the perfect place for your business to succeed.
+          </span>
         </div>
       </div>
 
@@ -43,7 +45,9 @@ const Home = () => {
           </div>
           <div className="service-card">
             <h3>Data driven insights</h3>
-            <span>We use advanced analytical concepts to provide you with the best recommendations...</span>
+            <span>
+              We use advanced analytical concepts to provide you with the best recommendations for business locations. Through a tailored approach, we consider each client’s specific criteria and preferences to suggest the most suitable business parks for their company. Leveraging sophisticated methods, we help you make informed decisions based on precise data, allowing your business to thrive in the ideal environment.
+            </span>
           </div>
         </div>
         <div className="service-right">
