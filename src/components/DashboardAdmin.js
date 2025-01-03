@@ -223,10 +223,18 @@ const DashboardAdmin = () => {
     });
   
     const [results, setResults] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(''); // For validation messages
   
     // Handle weight input changes
     const handleWeightChange = (e) => {
       const { name, value } = e.target;
+  
+      if (value < 1 || value > 10) {
+        setErrorMessage('Please enter values between 1 and 10.');
+      } else {
+        setErrorMessage('');
+      }
+  
       setWeights((prevState) => ({
         ...prevState,
         [name]: value,
@@ -245,9 +253,26 @@ const DashboardAdmin = () => {
       return normalized;
     };
   
+    // Normalize scores to 1-10
+    const normalizeScore = (value, minValue, maxValue) => {
+      if (maxValue === minValue) return 10; // Avoid division by zero
+      return ((value - minValue) / (maxValue - minValue)) * 10;
+    };
+  
+    // Normalize and invert costs to give higher scores for lower costs
+    const calculateNormalizedCost = (cost, minCost, maxCost) => {
+      return ((maxCost - cost) / (maxCost - minCost)) * 10;
+    };
+  
     // Calculate scores and rank parks
     const handleCreateStudy = (e) => {
       e.preventDefault();
+  
+      // Check if all weights are valid
+      if (Object.values(weights).some((weight) => weight < 1 || weight > 10 || weight === '')) {
+        setErrorMessage('All weights must be between 1 and 10.');
+        return;
+      }
   
       const normalizedWeights = normalizeWeights();
       if (!normalizedWeights) {
@@ -255,16 +280,35 @@ const DashboardAdmin = () => {
         return;
       }
   
-      // Calculate scores
+      // Find min and max for normalization
+      const minCost = Math.min(...parks.map((park) => park.p_price));
+      const maxCost = Math.max(...parks.map((park) => park.p_price));
+  
+      const criteria = [
+        { key: 'location', field: 'p_location_score' },
+        { key: 'parking', field: 'p_parking_score' },
+        { key: 'room', field: 'p_room_score' },
+        { key: 'roomUtilities', field: 'p_room_utilities_score' },
+        { key: 'transport', field: 'p_transport_score' },
+        { key: 'canteen', field: 'p_canteen_score' },
+      ];
+  
       const calculatedResults = parks.map((park) => {
-        const score =
-          normalizedWeights.cost * park.p_price +
-          normalizedWeights.location * park.p_location_score +
-          normalizedWeights.parking * park.p_parking_score +
-          normalizedWeights.room * park.p_room_score +
-          normalizedWeights.roomUtilities * park.p_room_utilities_score +
-          normalizedWeights.transport * park.p_transport_score +
-          normalizedWeights.canteen * park.p_canteen_score;
+        let score = 0;
+  
+        // Add normalized cost score
+        const normalizedCost = calculateNormalizedCost(park.p_price, minCost, maxCost);
+        score += normalizedWeights.cost * normalizedCost;
+  
+        // Add scores for other criteria
+        criteria.forEach(({ key, field }) => {
+          const values = parks.map((p) => p[field]);
+          const minValue = Math.min(...values);
+          const maxValue = Math.max(...values);
+  
+          const normalizedValue = normalizeScore(park[field], minValue, maxValue);
+          score += normalizedWeights[key] * normalizedValue;
+        });
   
         return {
           ...park,
@@ -276,58 +320,61 @@ const DashboardAdmin = () => {
       calculatedResults.sort((a, b) => b.score - a.score);
   
       setResults(calculatedResults);
+      setErrorMessage(''); // Clear any previous error messages
     };
   
     return (
       <div className="create-study">
         <h3>Create Study</h3>
+        <p>Please assign weights to criteria (1–10). Higher values mean more importance.</p>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <form onSubmit={handleCreateStudy}>
           <input
             type="number"
             name="cost"
-            placeholder="Cost Weight"
+            placeholder="Cost Weight (1–10)"
             value={weights.cost}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="location"
-            placeholder="Location Weight"
+            placeholder="Location Weight (1–10)"
             value={weights.location}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="parking"
-            placeholder="Parking Weight"
+            placeholder="Parking Weight (1–10)"
             value={weights.parking}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="room"
-            placeholder="Meeting Rooms Weight"
+            placeholder="Meeting Rooms Weight (1–10)"
             value={weights.room}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="roomUtilities"
-            placeholder="Meeting Room Utilities Weight"
+            placeholder="Meeting Room Utilities Weight (1–10)"
             value={weights.roomUtilities}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="transport"
-            placeholder="Transport Weight"
+            placeholder="Transport Weight (1–10)"
             value={weights.transport}
             onChange={handleWeightChange}
           />
           <input
             type="number"
             name="canteen"
-            placeholder="Canteen Weight"
+            placeholder="Canteen Weight (1–10)"
             value={weights.canteen}
             onChange={handleWeightChange}
           />
@@ -352,7 +399,7 @@ const DashboardAdmin = () => {
       </div>
     );
   };
-
+  
   return (
     <div className="dashboard-admin-container">
       <aside className="sidebar">
