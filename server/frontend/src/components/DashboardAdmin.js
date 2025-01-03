@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DashboardAdmin.css';
 
 const DashboardAdmin = () => {
@@ -22,6 +22,7 @@ const DashboardAdmin = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
     setNewPark((prevState) => ({
       ...prevState,
       [name]: value
@@ -81,88 +82,105 @@ const DashboardAdmin = () => {
     </div>
   );
 
-  const NewParkModal = () => (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h3>{newPark.p_id ? 'Edit Park' : 'Create New Park'}</h3>
-        <input
-          type="text"
-          name="p_name"
-          placeholder="Park Name"
-          value={newPark.p_name}
-          onChange={handleInputChange}
-          autoFocus
-        />
-        <input
-          type="text"
-          name="p_phone"
-          placeholder="Phone"
-          value={newPark.p_phone}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="p_website"
-          placeholder="Website"
-          value={newPark.p_website}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_price"
-          placeholder="Price"
-          value={newPark.p_price}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_location_score"
-          placeholder="Location Score"
-          value={newPark.p_location_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_parking_score"
-          placeholder="Parking Score"
-          value={newPark.p_parking_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_score"
-          placeholder="Room Score"
-          value={newPark.p_room_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_utilities_score"
-          placeholder="Room Utilities Score"
-          value={newPark.p_room_utilities_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_transport_score"
-          placeholder="Transport Score"
-          value={newPark.p_transport_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_canteen_score"
-          placeholder="Canteen Score"
-          value={newPark.p_canteen_score}
-          onChange={handleInputChange}
-        />
-        <div className="modal-buttons">
-          <button onClick={handleAddPark}>{newPark.p_id ? 'Update Park' : 'Add Park'}</button>
-          <button onClick={() => setShowNewParkModal(false)}>Cancel</button>
+  const NewParkModal = () => {
+    const [newParkData, setNewParkData] = useState(newPark);
+  
+    useEffect(() => {
+      setNewParkData(newPark);
+    }, [newPark]);
+  
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setNewParkData((prevState) => ({
+        ...prevState,
+        [name]: value
+      }));
+    };
+  
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>{newParkData.p_id ? 'Edit Park' : 'Create New Park'}</h3>
+          <input
+            type="text"
+            name="p_name"
+            placeholder="Park Name"
+            value={newParkData.p_name}
+            onChange={handleInputChange}
+            autoFocus
+          />
+          <input
+            type="text"
+            name="p_phone"
+            placeholder="Phone"
+            value={newParkData.p_phone}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="p_website"
+            placeholder="Website"
+            value={newParkData.p_website}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_price"
+            placeholder="Price"
+            value={newParkData.p_price}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_location_score"
+            placeholder="Location Score"
+            value={newParkData.p_location_score}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_parking_score"
+            placeholder="Parking Score"
+            value={newParkData.p_parking_score}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_room_score"
+            placeholder="Room Score"
+            value={newParkData.p_room_score}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_room_utilities_score"
+            placeholder="Room Utilities Score"
+            value={newParkData.p_room_utilities_score}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_transport_score"
+            placeholder="Transport Score"
+            value={newParkData.p_transport_score}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="p_canteen_score"
+            placeholder="Canteen Score"
+            value={newParkData.p_canteen_score}
+            onChange={handleInputChange}
+          />
+          <div className="modal-buttons">
+            <button onClick={() => handleAddPark(newParkData)}>{newParkData.p_id ? 'Update Park' : 'Add Park'}</button>
+            <button onClick={() => setShowNewParkModal(false)}>Cancel</button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
+  
 
   const CreateStudy = () => (
     <div className="create-study">
