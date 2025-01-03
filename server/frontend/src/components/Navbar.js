@@ -1,9 +1,18 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom'; // Added useLocation import
 import { useModal } from '../context/ModalContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { openModal } = useModal();
+  const location = useLocation(); // Ensure useLocation is defined
+  const { openModal } = useModal(); // Ensure useModal is called unconditionally
+
+  // Lista ścieżek, na których navbar nie powinien być widoczny
+  const hiddenPaths = ['/dashboard_admin'];
+
+  if (hiddenPaths.includes(location.pathname)) {
+    return null; // Zwracamy null, aby ukryć navbar
+  }
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importujemy useNavigate
 import axios from 'axios';
-import './Auth.css'; // Dodamy nowy plik CSS do stylizacji
+import './Auth.css';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -8,6 +9,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
+  const navigate = useNavigate(); // Inicjalizacja useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +23,9 @@ const Auth = () => {
         });
         console.log(response.data);
         alert('Login successful');
+
+        // Przekierowanie na Dashboard
+        navigate('/dashboard_admin');
       } catch (error) {
         console.error(error);
         alert('Error logging in');
@@ -36,6 +41,7 @@ const Auth = () => {
         });
         console.log(response.data);
         alert('Registration successful');
+        setIsLogin(true); // Przełącz na ekran logowania po rejestracji
       } catch (error) {
         console.error(error);
         alert('Error registering');

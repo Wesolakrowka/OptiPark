@@ -13,6 +13,7 @@ const Home = () => {
     <>
       <div id='home' className="hero-wrapper">
         <div className="hero-left">
+          <h1>Welcome to OptiPark</h1>
           <h1>Your Path to the <strong>Perfect <br /> Business Environment</strong></h1>
           <span>Find the Perfect Location for Your Business Using Data-Driven Insights.</span>
           <button className="arrow-button" onClick={scrollToServices}>
