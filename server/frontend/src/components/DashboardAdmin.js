@@ -127,82 +127,132 @@ const DashboardAdmin = () => {
     </div>
   );
 
-  // New Park Modal Component
   const NewParkModal = () => (
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>{newPark.p_id ? 'Edit Park' : 'Create New Park'}</h3>
-        <input
-          type="text"
-          name="p_name"
-          placeholder="Park Name"
-          value={newPark.p_name}
-          onChange={handleInputChange}
-          autoFocus
-        />
-        <input
-          type="text"
-          name="p_phone"
-          placeholder="Phone"
-          value={newPark.p_phone}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="p_website"
-          placeholder="Website"
-          value={newPark.p_website}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_price"
-          placeholder="Price"
-          value={newPark.p_price}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_location_score"
-          placeholder="Location Score"
-          value={newPark.p_location_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_parking_score"
-          placeholder="Parking Score"
-          value={newPark.p_parking_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_score"
-          placeholder="Room Score"
-          value={newPark.p_room_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_utilities_score"
-          placeholder="Room Utilities Score"
-          value={newPark.p_room_utilities_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_transport_score"
-          placeholder="Transport Score"
-          value={newPark.p_transport_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_canteen_score"
-          placeholder="Canteen Score"
-          value={newPark.p_canteen_score}
-          onChange={handleInputChange}
-        />
+
+        <div className="input-group">
+          <label htmlFor="p_name">Park Name</label>
+          <input
+            type="text"
+            name="p_name"
+            id="p_name"
+            placeholder="Park Name"
+            value={newPark.p_name}
+            onChange={handleInputChange}
+            autoFocus
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_phone">Phone</label>
+          <input
+            type="text"
+            name="p_phone"
+            id="p_phone"
+            placeholder="Phone"
+            value={newPark.p_phone}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_website">Website</label>
+          <input
+            type="text"
+            name="p_website"
+            id="p_website"
+            placeholder="Website"
+            value={newPark.p_website}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_price">Price</label>
+          <input
+            type="number"
+            name="p_price"
+            id="p_price"
+            placeholder="Price"
+            value={newPark.p_price}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_location_score">Location Score</label>
+          <input
+            type="number"
+            name="p_location_score"
+            id="p_location_score"
+            placeholder="Location Score"
+            value={newPark.p_location_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_parking_score">Parking Score</label>
+          <input
+            type="number"
+            name="p_parking_score"
+            id="p_parking_score"
+            placeholder="Parking Score"
+            value={newPark.p_parking_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_room_score">Room Score</label>
+          <input
+            type="number"
+            name="p_room_score"
+            id="p_room_score"
+            placeholder="Room Score"
+            value={newPark.p_room_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_room_utilities_score">Room Utilities Score</label>
+          <input
+            type="number"
+            name="p_room_utilities_score"
+            id="p_room_utilities_score"
+            placeholder="Room Utilities Score"
+            value={newPark.p_room_utilities_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_transport_score">Transport Score</label>
+          <input
+            type="number"
+            name="p_transport_score"
+            id="p_transport_score"
+            placeholder="Transport Score"
+            value={newPark.p_transport_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="p_canteen_score">Canteen Score</label>
+          <input
+            type="number"
+            name="p_canteen_score"
+            id="p_canteen_score"
+            placeholder="Canteen Score"
+            value={newPark.p_canteen_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
         <div className="modal-buttons">
           <button onClick={handleAddPark}>{newPark.p_id ? 'Update Park' : 'Add Park'}</button>
           <button onClick={resetNewParkForm}>Cancel</button>
@@ -210,6 +260,7 @@ const DashboardAdmin = () => {
       </div>
     </div>
   );
+
 
   const CreateStudy = () => (
     <div className="create-study">
