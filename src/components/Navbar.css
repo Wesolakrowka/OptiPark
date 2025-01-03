@@ -1,0 +1,57 @@
+/* Ogólny styl nawigacji */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  /* Logo */
+  .logo a {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #ff9900; /* Kolor pomarańczowy jak logo */
+  }
+  
+  /* Linki w menu */
+  .menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
+  }
+  
+  .menu a:hover {
+    color: #ff9900;
+  }
+  
+  /* Przycisk Login/Register */
+  .login-button {
+    padding: 8px 20px;
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    border-radius: 30px; /* Zaokrąglony przycisk */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .login-button:hover {
+    background-color: #e68a00;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
