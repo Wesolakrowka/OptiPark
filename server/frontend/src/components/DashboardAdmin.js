@@ -93,8 +93,35 @@ const DashboardAdmin = () => {
       const { name, value } = e.target;
       setNewParkData((prevState) => ({
         ...prevState,
-        [name]: value
+        [name]: value,
       }));
+    };
+  
+    const handleAddPark = () => {
+      if (newParkData.p_name.trim() !== '') {
+        // Adicionar novo parque
+        if (newParkData.p_id) {
+          setParks(parks.map((park) => (park.p_id === newParkData.p_id ? newParkData : park)));
+        } else {
+          newParkData.p_id = `park-${parks.length + 1}`;
+          setParks([...parks, newParkData]);
+        }
+        // Resetar campos do formulário
+        setNewParkData({
+          p_id: '',
+          p_name: '',
+          p_phone: '',
+          p_website: '',
+          p_price: '',
+          p_location_score: '',
+          p_parking_score: '',
+          p_room_score: '',
+          p_room_utilities_score: '',
+          p_transport_score: '',
+          p_canteen_score: ''
+        });
+        setShowNewParkModal(false);
+      }
     };
   
     return (
@@ -173,13 +200,16 @@ const DashboardAdmin = () => {
             onChange={handleInputChange}
           />
           <div className="modal-buttons">
-            <button onClick={() => handleAddPark(newParkData)}>{newParkData.p_id ? 'Update Park' : 'Add Park'}</button>
+            <button onClick={handleAddPark}>
+              {newParkData.p_id ? 'Update Park' : 'Add Park'}
+            </button>
             <button onClick={() => setShowNewParkModal(false)}>Cancel</button>
           </div>
         </div>
       </div>
     );
   };
+  
   
 
   const CreateStudy = () => (
