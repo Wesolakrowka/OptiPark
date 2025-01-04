@@ -204,5 +204,26 @@
   border-radius: 4px;
 }
 
+.center-container {
+  display: flex;
+  justify-content: center; /* Wyśrodkowanie poziome */
+  margin-top: 2rem; /* Odstęp od góry, opcjonalnie */
+}
+
+.export-button {
+  background-color: #f60;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.export-button:hover {
+  background-color: #e65500; /* Ciemniejszy pomarańczowy przy najechaniu */
+}
+
 
 

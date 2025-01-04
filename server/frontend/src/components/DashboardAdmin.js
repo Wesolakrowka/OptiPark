@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
+import * as XLSX from 'xlsx'; // Importujemy bibliotekę xlsx
+
 import './DashboardAdmin.css';
 
 const DashboardAdmin = () => {
   const [activePage, setActivePage] = useState('parks');
   const [parks, setParks] = useState([]);
   const [showNewParkModal, setShowNewParkModal] = useState(false);
+  const [results, setResults] = useState([]);
 
   const [newPark, setNewPark] = useState({
     p_id: '',
@@ -211,6 +214,29 @@ const DashboardAdmin = () => {
     </div>
   );
 
+
+  const exportToExcel = () => {
+    if (results.length === 0) {
+      alert('Nie ma wyników do eksportu!');
+      return;
+    }
+
+    const dataToExport = results.map((result, index) => ({
+      Rank: index + 1,
+      Name: result.p_name,
+      Phone: result.p_phone,
+      Website: result.p_website,
+      Score: result.score,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Study Results');
+
+    // Eksportujemy plik
+    XLSX.writeFile(workbook, 'Study_Results.xlsx');
+  };
+
   const CreateStudy = () => {
     const [weights, setWeights] = useState({
       cost: '',
@@ -221,69 +247,57 @@ const DashboardAdmin = () => {
       transport: '',
       canteen: '',
     });
-  
-    const [results, setResults] = useState([]);
+
     const [errorMessage, setErrorMessage] = useState(''); // For validation messages
-  
+
     // Handle weight input changes
     const handleWeightChange = (e) => {
       const { name, value } = e.target;
-  
+
       if (value < 1 || value > 10) {
         setErrorMessage('Please enter values between 1 and 10.');
       } else {
         setErrorMessage('');
       }
-  
+
       setWeights((prevState) => ({
         ...prevState,
         [name]: value,
       }));
     };
-  
+
     // Normalize weights
     const normalizeWeights = () => {
       const total = Object.values(weights).reduce((sum, val) => sum + parseFloat(val || 0), 0);
       if (total === 0) return null; // Avoid division by zero
-  
+
       const normalized = {};
       for (const key in weights) {
         normalized[key] = parseFloat(weights[key] || 0) / total;
       }
       return normalized;
     };
-  
-    // Normalize scores to 1-10
-    const normalizeScore = (value, minValue, maxValue) => {
-      if (maxValue === minValue) return 10; // Avoid division by zero
-      return ((value - minValue) / (maxValue - minValue)) * 10;
-    };
-  
-    // Normalize and invert costs to give higher scores for lower costs
-    const calculateNormalizedCost = (cost, minCost, maxCost) => {
-      return ((maxCost - cost) / (maxCost - minCost)) * 10;
-    };
-  
+
     // Calculate scores and rank parks
     const handleCreateStudy = (e) => {
       e.preventDefault();
-  
+
       // Check if all weights are valid
       if (Object.values(weights).some((weight) => weight < 1 || weight > 10 || weight === '')) {
         setErrorMessage('All weights must be between 1 and 10.');
         return;
       }
-  
+
       const normalizedWeights = normalizeWeights();
       if (!normalizedWeights) {
         alert('Please enter valid weights.');
         return;
       }
-  
+
       // Find min and max for normalization
       const minCost = Math.min(...parks.map((park) => park.p_price));
       const maxCost = Math.max(...parks.map((park) => park.p_price));
-  
+
       const criteria = [
         { key: 'location', field: 'p_location_score' },
         { key: 'parking', field: 'p_parking_score' },
@@ -292,37 +306,37 @@ const DashboardAdmin = () => {
         { key: 'transport', field: 'p_transport_score' },
         { key: 'canteen', field: 'p_canteen_score' },
       ];
-  
+
       const calculatedResults = parks.map((park) => {
         let score = 0;
-  
+
         // Add normalized cost score
-        const normalizedCost = calculateNormalizedCost(park.p_price, minCost, maxCost);
+        const normalizedCost = ((maxCost - park.p_price) / (maxCost - minCost)) * 10;
         score += normalizedWeights.cost * normalizedCost;
-  
+
         // Add scores for other criteria
         criteria.forEach(({ key, field }) => {
           const values = parks.map((p) => p[field]);
           const minValue = Math.min(...values);
           const maxValue = Math.max(...values);
-  
-          const normalizedValue = normalizeScore(park[field], minValue, maxValue);
+
+          const normalizedValue = ((park[field] - minValue) / (maxValue - minValue)) * 10;
           score += normalizedWeights[key] * normalizedValue;
         });
-  
+
         return {
           ...park,
           score: score.toFixed(2), // Round to 2 decimals
         };
       });
-  
+
       // Sort results by score (highest first)
       calculatedResults.sort((a, b) => b.score - a.score);
-  
-      setResults(calculatedResults);
+
+      setResults(calculatedResults); // Ustawia wyniki w głównym stanie
       setErrorMessage(''); // Clear any previous error messages
     };
-  
+
     return (
       <div className="create-study">
         <h3>Create Study</h3>
@@ -378,11 +392,11 @@ const DashboardAdmin = () => {
             value={weights.canteen}
             onChange={handleWeightChange}
           />
-          <button type="submit" className="create-study-button">
+   <button type="submit" className="create-study-button">
             Calculate Study
           </button>
         </form>
-  
+
         {results.length > 0 && (
           <div className="study-result">
             <h3>Study Result</h3>
@@ -394,12 +408,15 @@ const DashboardAdmin = () => {
                 <span>Score: {result.score}</span>
               </div>
             ))}
+            <button onClick={exportToExcel} className="export-button">
+              Export to Excel
+            </button>
           </div>
         )}
       </div>
     );
   };
-  
+
   return (
     <div className="dashboard-admin-container">
       <aside className="sidebar">
@@ -427,7 +444,5 @@ const DashboardAdmin = () => {
     </div>
   );
 };
-
-
 
 export default DashboardAdmin;
