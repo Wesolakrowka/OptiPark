@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import ResultsTable from './ResultsTable';
@@ -53,15 +53,6 @@ const DashboardAdmin = () => {
       park.p_name.toLowerCase().includes(query)
     );
     setFilteredParks(filtered);
-  };
-
-  // Handle input change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewPark((prevState) => ({
-      ...prevState,
-      [name]: value
-    }));
   };
 
   // Add or Update park
@@ -131,140 +122,105 @@ const DashboardAdmin = () => {
     setShowNewParkModal(false);
   };
 
-  // New Park Modal Component
-  const NewParkModal = () => (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h3>{newPark.p_id ? 'Edit Park' : 'Create New Park'}</h3>
+  const NewParkModal = () => {
+    const [newParkData, setNewParkData] = useState(newPark);
 
-        <div className="form-group">
-          <label htmlFor="p_name">Park Name</label>
+    useEffect(() => {
+      setNewParkData(newPark);
+    }, [newPark]);
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setNewParkData((prevState) => ({
+        ...prevState,
+        [name]: value
+      }));
+    };
+
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>{newParkData.p_id ? 'Edit Park' : 'Create New Park'}</h3>
           <input
             type="text"
-            id="p_name"
             name="p_name"
             placeholder="Park Name"
-            value={newPark.p_name}
+            value={newParkData.p_name}
             onChange={handleInputChange}
             autoFocus
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_phone">Phone</label>
           <input
             type="text"
-            id="p_phone"
             name="p_phone"
             placeholder="Phone"
-            value={newPark.p_phone}
+            value={newParkData.p_phone}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_website">Website</label>
           <input
             type="text"
-            id="p_website"
             name="p_website"
             placeholder="Website"
-            value={newPark.p_website}
+            value={newParkData.p_website}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_price">Price</label>
           <input
             type="number"
-            id="p_price"
             name="p_price"
             placeholder="Price"
-            value={newPark.p_price}
+            value={newParkData.p_price}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_location_score">Location Score</label>
           <input
             type="number"
-            id="p_location_score"
             name="p_location_score"
             placeholder="Location Score"
-            value={newPark.p_location_score}
+            value={newParkData.p_location_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_parking_score">Parking Score</label>
           <input
             type="number"
-            id="p_parking_score"
             name="p_parking_score"
             placeholder="Parking Score"
-            value={newPark.p_parking_score}
+            value={newParkData.p_parking_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_room_score">Room Score</label>
           <input
             type="number"
-            id="p_room_score"
             name="p_room_score"
             placeholder="Room Score"
-            value={newPark.p_room_score}
+            value={newParkData.p_room_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_room_utilities_score">Room Utilities Score</label>
           <input
             type="number"
-            id="p_room_utilities_score"
             name="p_room_utilities_score"
             placeholder="Room Utilities Score"
-            value={newPark.p_room_utilities_score}
+            value={newParkData.p_room_utilities_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_transport_score">Transport Score</label>
           <input
             type="number"
-            id="p_transport_score"
             name="p_transport_score"
             placeholder="Transport Score"
-            value={newPark.p_transport_score}
+            value={newParkData.p_transport_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="p_canteen_score">Canteen Score</label>
           <input
             type="number"
-            id="p_canteen_score"
             name="p_canteen_score"
             placeholder="Canteen Score"
-            value={newPark.p_canteen_score}
+            value={newParkData.p_canteen_score}
             onChange={handleInputChange}
           />
-        </div>
-
-        <div className="modal-buttons">
-          <button onClick={handleAddPark}>{newPark.p_id ? 'Update Park' : 'Add Park'}</button>
-          <button onClick={resetNewParkForm}>Cancel</button>
+          <div className="modal-buttons">
+            <button onClick={() => handleAddPark(newParkData)}>{newParkData.p_id ? 'Update Park' : 'Add Park'}</button>
+            <button onClick={() => setShowNewParkModal(false)}>Cancel</button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+
+  };
 
 
   const exportToExcel = () => {

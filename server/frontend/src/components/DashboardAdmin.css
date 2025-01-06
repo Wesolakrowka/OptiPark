@@ -271,3 +271,18 @@ input:focus {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+/* Edit and Delete buttons with the same style as the New Park button */
+.park-item div button {
+  background-color: #f60;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0.2rem 0.2rem; /* Add some space between buttons */
+}
+
+.park-item div button:hover {
+  background-color: #e55a00; /* Slightly darker shade when hovering */
+}
