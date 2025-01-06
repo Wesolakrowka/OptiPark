@@ -141,72 +141,92 @@ const DashboardAdmin = () => {
       <div className="modal-overlay">
         <div className="modal-content">
           <h3>{newParkData.p_id ? 'Edit Park' : 'Create New Park'}</h3>
+          <label htmlFor="p_name">Park Name:</label>
           <input
             type="text"
+            id="p_name"
             name="p_name"
             placeholder="Park Name"
             value={newParkData.p_name}
             onChange={handleInputChange}
             autoFocus
           />
+          <label htmlFor="p_phone">Phone:</label>
           <input
             type="text"
+            id="p_phone"
             name="p_phone"
             placeholder="Phone"
             value={newParkData.p_phone}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_website">Website:</label>
           <input
             type="text"
+            id="p_website"
             name="p_website"
             placeholder="Website"
             value={newParkData.p_website}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_price">Price:</label>
           <input
             type="number"
+            id="p_price"
             name="p_price"
             placeholder="Price"
             value={newParkData.p_price}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_location_score">Location Score:</label>
           <input
             type="number"
+            id="p_location_score"
             name="p_location_score"
             placeholder="Location Score"
             value={newParkData.p_location_score}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_parking_score">Parking Score:</label>
           <input
             type="number"
+            id="p_parking_score"
             name="p_parking_score"
             placeholder="Parking Score"
             value={newParkData.p_parking_score}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_room_score">Room Score:</label>
           <input
             type="number"
+            id="p_room_score"
             name="p_room_score"
             placeholder="Room Score"
             value={newParkData.p_room_score}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_room_utilities_score">Room Utilities Score:</label>
           <input
             type="number"
+            id="p_room_utilities_score"
             name="p_room_utilities_score"
             placeholder="Room Utilities Score"
             value={newParkData.p_room_utilities_score}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_transport_score">Transport Score:</label>
           <input
             type="number"
+            id="p_transport_score"
             name="p_transport_score"
             placeholder="Transport Score"
             value={newParkData.p_transport_score}
             onChange={handleInputChange}
           />
+          <label htmlFor="p_canteen_score">Canteen Score:</label>
           <input
             type="number"
+            id="p_canteen_score"
             name="p_canteen_score"
             placeholder="Canteen Score"
             value={newParkData.p_canteen_score}
