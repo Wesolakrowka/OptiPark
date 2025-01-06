@@ -93,17 +93,18 @@ const DashboardAdmin = () => {
 
   // Delete park
   const handleDeletePark = (p_id) => {
-    console.log('Deleting park with ID:', p_id);
     axios.delete(`http://localhost:3000/api/parks/${p_id}`)
       .then(() => {
-        console.log('Park deleted successfully');
-        setParks(parks.filter((park) => park.p_id !== p_id));
+        // Remove the deleted park from both parks and filteredParks state
+        setParks((prevParks) => prevParks.filter((park) => park.p_id !== p_id));
+        setFilteredParks((prevFilteredParks) => prevFilteredParks.filter((park) => park.p_id !== p_id));
       })
       .catch((error) => {
         console.error('Error deleting park:', error);
       });
   };
-  
+
+
 
   // Edit park (prepopulate form)
   const handleEditPark = (index) => {
