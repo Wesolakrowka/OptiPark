@@ -1,12 +1,15 @@
-import axios from 'axios'; // Import axios
-import * as XLSX from 'xlsx'; // Importujemy bibliotekę xlsx
-import React, { useState, useEffect } from 'react'; // Import React
-import ResultsTable from './ResultsTable'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import * as XLSX from 'xlsx';
+import ResultsTable from './ResultsTable';
 import './DashboardAdmin.css';
+import EditParks from './EditParks.js'
 
 const DashboardAdmin = () => {
   const [activePage, setActivePage] = useState('parks');
   const [parks, setParks] = useState([]);
+  const [filteredParks, setFilteredParks] = useState([]); // New state for filtered parks
+  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
   const [showNewParkModal, setShowNewParkModal] = useState(false);
   const [results, setResults] = useState([]);
 
@@ -21,23 +24,36 @@ const DashboardAdmin = () => {
     p_room_score: '',
     p_room_utilities_score: '',
     p_transport_score: '',
-    p_canteen_score: ''
+    p_canteen_score: '',
   });
 
   // Fetch parks from backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/parks', {
-      headers: {
-        'Content-Type': "application/json"
-      }
-    })
-      .then(response => {
-        setParks(response.data);
+    axios
+      .get('http://localhost:3000/api/parks', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch(error => {
+      .then((response) => {
+        setParks(response.data);
+        setFilteredParks(response.data); // Initialize filtered parks with all parks
+      })
+      .catch((error) => {
         console.error('Error fetching parks:', error);
       });
   }, []);
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    const filtered = parks.filter((park) =>
+      park.p_name.toLowerCase().includes(query)
+    );
+    setFilteredParks(filtered);
+  };
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -76,15 +92,18 @@ const DashboardAdmin = () => {
   };
 
   // Delete park
-  const handleDeletePark = (parkId) => {
-    axios.delete(`http://localhost:3000/api/parks/${parkId}`) // Updated backend URL
+  const handleDeletePark = (p_id) => {
+    console.log('Deleting park with ID:', p_id);
+    axios.delete(`http://localhost:3000/api/parks/${p_id}`)
       .then(() => {
-        setParks(parks.filter((park) => park.p_id !== parkId));
+        console.log('Park deleted successfully');
+        setParks(parks.filter((park) => park.p_id !== p_id));
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error deleting park:', error);
       });
   };
+  
 
   // Edit park (prepopulate form)
   const handleEditPark = (index) => {
@@ -111,101 +130,133 @@ const DashboardAdmin = () => {
     setShowNewParkModal(false);
   };
 
-  // Edit Parks Component
-  const EditParks = () => (
-    <div className="edit-parks">
-      <h3>Park List</h3>
-      <button className="new-park-button" onClick={() => setShowNewParkModal(true)}>
-        New Park
-      </button>
-      {parks.map((park, index) => (
-        <div className="park-item" key={park.p_id}>
-          <span>{park.p_name}</span>
-          <div>
-            <button onClick={() => handleEditPark(index)}>Edit</button>
-            <button onClick={() => handleDeletePark(park.p_id)}>Delete</button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
   // New Park Modal Component
   const NewParkModal = () => (
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>{newPark.p_id ? 'Edit Park' : 'Create New Park'}</h3>
-        <input
-          type="text"
-          name="p_name"
-          placeholder="Park Name"
-          value={newPark.p_name}
-          onChange={handleInputChange}
-          autoFocus
-        />
-        <input
-          type="text"
-          name="p_phone"
-          placeholder="Phone"
-          value={newPark.p_phone}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="p_website"
-          placeholder="Website"
-          value={newPark.p_website}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_price"
-          placeholder="Price"
-          value={newPark.p_price}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_location_score"
-          placeholder="Location Score"
-          value={newPark.p_location_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_parking_score"
-          placeholder="Parking Score"
-          value={newPark.p_parking_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_score"
-          placeholder="Room Score"
-          value={newPark.p_room_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_room_utilities_score"
-          placeholder="Room Utilities Score"
-          value={newPark.p_room_utilities_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_transport_score"
-          placeholder="Transport Score"
-          value={newPark.p_transport_score}
-          onChange={handleInputChange}
-        />
-        <input
-          type="number"
-          name="p_canteen_score"
-          placeholder="Canteen Score"
-          value={newPark.p_canteen_score}
-          onChange={handleInputChange}
-        />
+
+        <div className="form-group">
+          <label htmlFor="p_name">Park Name</label>
+          <input
+            type="text"
+            id="p_name"
+            name="p_name"
+            placeholder="Park Name"
+            value={newPark.p_name}
+            onChange={handleInputChange}
+            autoFocus
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_phone">Phone</label>
+          <input
+            type="text"
+            id="p_phone"
+            name="p_phone"
+            placeholder="Phone"
+            value={newPark.p_phone}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_website">Website</label>
+          <input
+            type="text"
+            id="p_website"
+            name="p_website"
+            placeholder="Website"
+            value={newPark.p_website}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_price">Price</label>
+          <input
+            type="number"
+            id="p_price"
+            name="p_price"
+            placeholder="Price"
+            value={newPark.p_price}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_location_score">Location Score</label>
+          <input
+            type="number"
+            id="p_location_score"
+            name="p_location_score"
+            placeholder="Location Score"
+            value={newPark.p_location_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_parking_score">Parking Score</label>
+          <input
+            type="number"
+            id="p_parking_score"
+            name="p_parking_score"
+            placeholder="Parking Score"
+            value={newPark.p_parking_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_room_score">Room Score</label>
+          <input
+            type="number"
+            id="p_room_score"
+            name="p_room_score"
+            placeholder="Room Score"
+            value={newPark.p_room_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_room_utilities_score">Room Utilities Score</label>
+          <input
+            type="number"
+            id="p_room_utilities_score"
+            name="p_room_utilities_score"
+            placeholder="Room Utilities Score"
+            value={newPark.p_room_utilities_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_transport_score">Transport Score</label>
+          <input
+            type="number"
+            id="p_transport_score"
+            name="p_transport_score"
+            placeholder="Transport Score"
+            value={newPark.p_transport_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="p_canteen_score">Canteen Score</label>
+          <input
+            type="number"
+            id="p_canteen_score"
+            name="p_canteen_score"
+            placeholder="Canteen Score"
+            value={newPark.p_canteen_score}
+            onChange={handleInputChange}
+          />
+        </div>
+
         <div className="modal-buttons">
           <button onClick={handleAddPark}>{newPark.p_id ? 'Update Park' : 'Add Park'}</button>
           <button onClick={resetNewParkForm}>Cancel</button>
@@ -214,12 +265,13 @@ const DashboardAdmin = () => {
     </div>
   );
 
+
   const exportToExcel = () => {
     if (results.length === 0) {
       alert('Nie ma wyników do eksportu!'); // Alert if no results to export
       return;
     }
-  
+
     // Map the results data into a format suitable for export
     const dataToExport = results.map((result, index) => ({
       Rank: index + 1,
@@ -228,19 +280,19 @@ const DashboardAdmin = () => {
       Website: result.p_website,
       Score: result.score,
     }));
-  
+
     // Convert data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Study Results');
-  
+
     // Write the Excel file
     XLSX.writeFile(workbook, 'Study_Results.xlsx');
   };
 
 
 
-  
+
   const CreateStudy = () => {
     const criteria = ['cost', 'location', 'parking', 'room', 'roomUtilities', 'transport', 'canteen'];
     const [parks, setParks] = useState([]);
@@ -249,7 +301,7 @@ const DashboardAdmin = () => {
     const [consistencyRatio, setConsistencyRatio] = useState(null);
     const [results, setResults] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
-  
+
     // Pobranie parków z API
     useEffect(() => {
       const fetchParks = async () => {
@@ -261,10 +313,10 @@ const DashboardAdmin = () => {
           setErrorMessage('Failed to load park data. Please try again.');
         }
       };
-  
+
       fetchParks();
     }, []);
-  
+
     useEffect(() => {
       if (pairwiseMatrix.length === 0) {
         const size = criteria.length;
@@ -274,8 +326,8 @@ const DashboardAdmin = () => {
         setPairwiseMatrix(newMatrix);
       }
     }, [criteria]); // Usuwamy automatyczne nadpisanie
-    
-  
+
+
     // Aktualizacja wartości w macierzy parowej
     const handleMatrixChange = (row, col, value) => {
       const parsedValue = parseFloat(value);
@@ -284,7 +336,7 @@ const DashboardAdmin = () => {
         return;
       }
       setErrorMessage('');
-  
+
       setPairwiseMatrix((prevMatrix) => {
         const updatedMatrix = prevMatrix.map((r, i) =>
           r.map((val, j) => {
@@ -300,30 +352,30 @@ const DashboardAdmin = () => {
         return updatedMatrix;
       });
     };
-  
+
     // Obliczanie wag i wskaźnika spójności
     const calculateWeightsAndConsistency = () => {
       if (!pairwiseMatrix.length) return;
-  
+
       const size = pairwiseMatrix.length;
-  
+
       // Sumy kolumn
       const colSums = pairwiseMatrix.reduce(
         (sums, row) => row.map((val, colIndex) => sums[colIndex] + val),
         Array(size).fill(0)
       );
-  
+
       // Normalizacja macierzy
       const normalizedMatrix = pairwiseMatrix.map((row) =>
         row.map((val, colIndex) => val / colSums[colIndex])
       );
-  
+
       // Obliczanie wag
       const calculatedWeights = normalizedMatrix.map((row) =>
         row.reduce((sum, val) => sum + val, 0) / size
       );
       setWeights(calculatedWeights);
-  
+
       // Obliczenie wskaźnika spójności
       const weightedSums = pairwiseMatrix.map((row) =>
         row.reduce((sum, val, colIndex) => sum + val * calculatedWeights[colIndex], 0)
@@ -331,27 +383,27 @@ const DashboardAdmin = () => {
       const lambdaMax =
         weightedSums.reduce((sum, val, i) => sum + val / calculatedWeights[i], 0) / size;
       const consistencyIndex = (lambdaMax - size) / (size - 1);
-  
+
       // Wskaźnik losowy (RI)
       const randomIndex = [0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49][size - 1] || 1.49;
-  
+
       const calculatedConsistencyRatio = consistencyIndex / randomIndex;
       setConsistencyRatio(calculatedConsistencyRatio);
-  
+
       if (calculatedConsistencyRatio > 0.1) {
         setErrorMessage('Consistency ratio is too high. Please review your priorities.');
       } else {
         setErrorMessage('');
       }
     };
-  
+
     // Obliczanie wyników parków na podstawie wag
     const calculateParkScores = () => {
       if (!parks.length) {
         alert('No park data available for analysis.');
         return;
       }
-  
+
       const criteriaFields = {
         cost: 'p_price',
         location: 'p_location_score',
@@ -361,36 +413,36 @@ const DashboardAdmin = () => {
         transport: 'p_transport_score',
         canteen: 'p_canteen_score',
       };
-  
+
       const parkScores = parks.map((park) => {
         let totalScore = 0;
-  
+
         criteria.forEach((criterion, index) => {
           const field = criteriaFields[criterion];
           const values = parks.map((p) => p[field] || 0);
           const minValue = Math.min(...values);
           const maxValue = Math.max(...values);
-  
+
           const normalizedValue =
             ((park[field] || 0) - minValue) / (maxValue - minValue) || 0;
           totalScore += weights[index] * normalizedValue;
         });
-  
+
         return {
           ...park,
           finalScore: totalScore.toFixed(3),
         };
       });
-  
+
       const sortedResults = parkScores.sort((a, b) => b.finalScore - a.finalScore);
       setResults(sortedResults);
     };
-  
+
     return (
       <div className="create-study">
         <h3>Create Study</h3>
         {errorMessage && <div className="error-message">{errorMessage}</div>}
-  
+
         <h4>Pairwise Comparison Matrix</h4>
         {pairwiseMatrix.length > 0 ? (
           <table>
@@ -430,9 +482,9 @@ const DashboardAdmin = () => {
         ) : (
           <p>Loading matrix...</p>
         )}
-  
+
         <button onClick={calculateWeightsAndConsistency}>Calculate Weights</button>
-  
+
         <h4>Weights</h4>
         <ul>
           {weights.map((weight, index) => (
@@ -442,9 +494,9 @@ const DashboardAdmin = () => {
           ))}
         </ul>
         <h4>Consistency Ratio: {consistencyRatio?.toFixed(3) || 'N/A'}</h4>
-  
+
         <button onClick={calculateParkScores}>Calculate Park Rankings</button>
-  
+
         {results.length > 0 && (
           <div>
             <h4>Results</h4>
@@ -460,13 +512,6 @@ const DashboardAdmin = () => {
       </div>
     );
   };
-  
- 
-  
-
-  
-
-
   return (
     <div className="dashboard-admin-container">
       <aside className="sidebar">
@@ -487,7 +532,14 @@ const DashboardAdmin = () => {
         </ul>
       </aside>
       <main className="main-content">
-        {activePage === 'parks' ? <EditParks /> : <CreateStudy />}
+        {activePage === 'parks' ? <EditParks
+          searchQuery={searchQuery}
+          handleSearchChange={handleSearchChange}
+          filteredParks={filteredParks}
+          handleEditPark={handleEditPark}
+          handleDeletePark={handleDeletePark}
+          setShowNewParkModal={setShowNewParkModal}
+        /> : <CreateStudy />}
       </main>
 
       {showNewParkModal && <NewParkModal />}

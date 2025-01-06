@@ -29,7 +29,8 @@
   color: #333;
 }
 
-.sidebar ul li.active, .sidebar ul li:hover {
+.sidebar ul li.active,
+.sidebar ul li:hover {
   background-color: #f60;
   color: #fff;
   border-radius: 4px;
@@ -41,12 +42,14 @@
   background-color: #fff;
 }
 
-.edit-parks h3, .create-study h3 {
+.edit-parks h3,
+.create-study h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.park-item, .result-item {
+.park-item,
+.result-item {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 1rem;
@@ -55,11 +58,13 @@
   border-radius: 4px;
 }
 
-.park-item:hover, .result-item:hover {
+.park-item:hover,
+.result-item:hover {
   background-color: #ddd;
 }
 
-.new-park-button, .create-study-button {
+.new-park-button,
+.create-study-button {
   background-color: #f60;
   color: #fff;
   border: none;
@@ -139,7 +144,6 @@
   z-index: 1; /* Keep the buttons above the scrollable content */
 }
 
-/* Button styles */
 .modal-buttons button {
   padding: 10px 15px;
   font-size: 16px;
@@ -152,33 +156,19 @@
   background-color: #f0f0f0;
 }
 
-/* Optional: Style for input text to show better when entered */
 .modal-content input:focus {
-  border-color: #4a90e2; /* Highlight input field when focused */
+  border-color: #4a90e2;
   outline: none;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
 }
 
 .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  max-width: 600px; /* Adjust width as needed */
+  max-width: 600px;
   width: 100%;
-  max-height: 80vh; /* Set a maximum height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -206,8 +196,8 @@
 
 .center-container {
   display: flex;
-  justify-content: center; /* Wyśrodkowanie poziome */
-  margin-top: 2rem; /* Odstęp od góry, opcjonalnie */
+  justify-content: center;
+  margin-top: 2rem;
 }
 
 .export-button {
@@ -222,10 +212,8 @@
 }
 
 .export-button:hover {
-  background-color: #e65500; /* Ciemniejszy pomarańczowy przy najechaniu */
+  background-color: #e65500;
 }
-
-
 
 .results-table {
   width: 100%;
@@ -244,3 +232,42 @@
   background-color: #f4f4f4;
 }
 
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.search-bar {
+  margin-bottom: 15px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
