@@ -10,6 +10,8 @@ const ResultsTable = ({ results }) => {
       Phone: result.p_phone,
       Website: result.p_website,
       FinalScore: result.finalScore,
+      StrongestCriteria: result.strongestCriteria,
+      WeakestCriteria: result.weakestCriteria,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -29,6 +31,8 @@ const ResultsTable = ({ results }) => {
             <th>Phone</th>
             <th>Website</th>
             <th>Final Score</th>
+            <th>Strongest Criteria</th>
+            <th>Weakest Criteria</th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +43,8 @@ const ResultsTable = ({ results }) => {
               <td>{result.p_phone}</td>
               <td>{result.p_website}</td>
               <td>{result.finalScore}</td>
+              <td>{result.strongestCriteria}</td>
+              <td>{result.weakestCriteria}</td>
             </tr>
           ))}
         </tbody>

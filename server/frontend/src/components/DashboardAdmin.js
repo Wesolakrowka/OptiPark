@@ -278,7 +278,7 @@ const DashboardAdmin = () => {
     const [consistencyRatio, setConsistencyRatio] = useState(null);
     const [results, setResults] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
-
+  
     // Pobranie parków z API
     useEffect(() => {
       const fetchParks = async () => {
@@ -290,21 +290,19 @@ const DashboardAdmin = () => {
           setErrorMessage('Failed to load park data. Please try again.');
         }
       };
-
+  
       fetchParks();
     }, []);
-
+  
+    // Inicjalizacja macierzy parowej
     useEffect(() => {
       if (pairwiseMatrix.length === 0) {
         const size = criteria.length;
-        const newMatrix = Array.from({ length: size }, () =>
-          Array.from({ length: size }, () => 1)
-        );
+        const newMatrix = Array.from({ length: size }, () => Array.from({ length: size }, () => 1));
         setPairwiseMatrix(newMatrix);
       }
-    }, [criteria]); // Usuwamy automatyczne nadpisanie
-
-
+    }, [criteria]);
+  
     // Aktualizacja wartości w macierzy parowej
     const handleMatrixChange = (row, col, value) => {
       const parsedValue = parseFloat(value);
@@ -313,7 +311,7 @@ const DashboardAdmin = () => {
         return;
       }
       setErrorMessage('');
-
+  
       setPairwiseMatrix((prevMatrix) => {
         const updatedMatrix = prevMatrix.map((r, i) =>
           r.map((val, j) => {
@@ -329,69 +327,60 @@ const DashboardAdmin = () => {
         return updatedMatrix;
       });
     };
-
+  
     // Obliczanie wag i wskaźnika spójności
     const calculateWeightsAndConsistency = () => {
       if (!pairwiseMatrix.length) return;
-    
+  
       const size = pairwiseMatrix.length;
-    
+  
       // Sumy kolumn
       const colSums = pairwiseMatrix.reduce(
         (sums, row) => row.map((val, colIndex) => sums[colIndex] + val),
         Array(size).fill(0)
       );
-      console.log("Sumy kolumn:", colSums);
-    
+  
       // Normalizacja macierzy
       const normalizedMatrix = pairwiseMatrix.map((row) =>
         row.map((val, colIndex) => val / colSums[colIndex])
       );
-      console.log("Znormalizowana macierz:", normalizedMatrix);
-    
+  
       // Obliczanie wag
       const calculatedWeights = normalizedMatrix.map((row) =>
         row.reduce((sum, val) => sum + val, 0) / size
       );
-      console.log("Obliczone wagi:", calculatedWeights);
       setWeights(calculatedWeights);
-    
+  
       // Obliczenie wskaźnika spójności
       const weightedSums = pairwiseMatrix.map((row) =>
         row.reduce((sum, val, colIndex) => sum + val * calculatedWeights[colIndex], 0)
       );
-      console.log("Wektory ważonych sum:", weightedSums);
-    
+  
       const lambdaMax =
         weightedSums.reduce((sum, val, i) => sum + val / calculatedWeights[i], 0) / size;
-      console.log("Lambda Max:", lambdaMax);
-    
+  
       const consistencyIndex = (lambdaMax - size) / (size - 1);
-      console.log("Wskaźnik spójności (CI):", consistencyIndex);
-    
-      // Wskaźnik losowy (RI)
+  
       const randomIndex = [0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49][size - 1] || 1.49;
-    
+  
       const calculatedConsistencyRatio = consistencyIndex / randomIndex;
-      console.log("Wskaźnik spójności (CR):", calculatedConsistencyRatio);
-    
+  
       setConsistencyRatio(calculatedConsistencyRatio);
-    
+  
       if (calculatedConsistencyRatio > 0.1) {
         setErrorMessage('Consistency ratio is too high. Please review your priorities.');
       } else {
         setErrorMessage('');
       }
     };
-    
-
+  
     // Obliczanie wyników parków na podstawie wag
     const calculateParkScores = () => {
       if (!parks.length) {
         alert('No park data available for analysis.');
         return;
       }
-
+  
       const criteriaFields = {
         cost: 'p_price',
         location: 'p_location_score',
@@ -401,36 +390,57 @@ const DashboardAdmin = () => {
         transport: 'p_transport_score',
         canteen: 'p_canteen_score',
       };
-
+  
       const parkScores = parks.map((park) => {
         let totalScore = 0;
-
+        let strongestCriteria = '';
+        let weakestCriteria = '';
+        let maxImpact = -Infinity;
+        let minImpact = Infinity;
+  
         criteria.forEach((criterion, index) => {
           const field = criteriaFields[criterion];
           const values = parks.map((p) => p[field] || 0);
           const minValue = Math.min(...values);
           const maxValue = Math.max(...values);
-
+  
+          // Normalizacja z uwzględnieniem kosztu (niższy koszt = lepszy wynik)
           const normalizedValue =
-            ((park[field] || 0) - minValue) / (maxValue - minValue) || 0;
-          totalScore += weights[index] * normalizedValue;
+            criterion === 'cost'
+              ? (maxValue - (park[field] || 0)) / (maxValue - minValue) // odwrotna normalizacja dla kosztu
+              : ((park[field] || 0) - minValue) / (maxValue - minValue);
+  
+          const impact = weights[index] * normalizedValue;
+          totalScore += impact;
+  
+          if (impact > maxImpact) {
+            maxImpact = impact;
+            strongestCriteria = criterion;
+          }
+  
+          if (impact < minImpact) {
+            minImpact = impact;
+            weakestCriteria = criterion;
+          }
         });
-
+  
         return {
           ...park,
           finalScore: totalScore.toFixed(3),
+          strongestCriteria,
+          weakestCriteria,
         };
       });
-
+  
       const sortedResults = parkScores.sort((a, b) => b.finalScore - a.finalScore);
       setResults(sortedResults);
     };
-
+  
     return (
       <div className="create-study">
         <h3>Create Study</h3>
         {errorMessage && <div className="error-message">{errorMessage}</div>}
-
+  
         <h4>Pairwise Comparison Matrix</h4>
         {pairwiseMatrix.length > 0 ? (
           <table>
@@ -470,9 +480,9 @@ const DashboardAdmin = () => {
         ) : (
           <p>Loading matrix...</p>
         )}
-
+  
         <button onClick={calculateWeightsAndConsistency}>Calculate Weights</button>
-
+  
         <h4>Weights</h4>
         <ul>
           {weights.map((weight, index) => (
@@ -482,13 +492,14 @@ const DashboardAdmin = () => {
           ))}
         </ul>
         <h4>Consistency Ratio: {consistencyRatio?.toFixed(3) || 'N/A'}</h4>
-
+  
         <button onClick={calculateParkScores}>Calculate Park Rankings</button>
-
+  
         {results.length > 0 && <ResultsTable results={results} />}
       </div>
     );
   };
+  
   return (
     <div className="dashboard-admin-container">
       <aside className="sidebar">
