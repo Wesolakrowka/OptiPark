@@ -333,46 +333,57 @@ const DashboardAdmin = () => {
     // Obliczanie wag i wskaźnika spójności
     const calculateWeightsAndConsistency = () => {
       if (!pairwiseMatrix.length) return;
-
+    
       const size = pairwiseMatrix.length;
-
+    
       // Sumy kolumn
       const colSums = pairwiseMatrix.reduce(
         (sums, row) => row.map((val, colIndex) => sums[colIndex] + val),
         Array(size).fill(0)
       );
-
+      console.log("Sumy kolumn:", colSums);
+    
       // Normalizacja macierzy
       const normalizedMatrix = pairwiseMatrix.map((row) =>
         row.map((val, colIndex) => val / colSums[colIndex])
       );
-
+      console.log("Znormalizowana macierz:", normalizedMatrix);
+    
       // Obliczanie wag
       const calculatedWeights = normalizedMatrix.map((row) =>
         row.reduce((sum, val) => sum + val, 0) / size
       );
+      console.log("Obliczone wagi:", calculatedWeights);
       setWeights(calculatedWeights);
-
+    
       // Obliczenie wskaźnika spójności
       const weightedSums = pairwiseMatrix.map((row) =>
         row.reduce((sum, val, colIndex) => sum + val * calculatedWeights[colIndex], 0)
       );
+      console.log("Wektory ważonych sum:", weightedSums);
+    
       const lambdaMax =
         weightedSums.reduce((sum, val, i) => sum + val / calculatedWeights[i], 0) / size;
+      console.log("Lambda Max:", lambdaMax);
+    
       const consistencyIndex = (lambdaMax - size) / (size - 1);
-
+      console.log("Wskaźnik spójności (CI):", consistencyIndex);
+    
       // Wskaźnik losowy (RI)
       const randomIndex = [0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49][size - 1] || 1.49;
-
+    
       const calculatedConsistencyRatio = consistencyIndex / randomIndex;
+      console.log("Wskaźnik spójności (CR):", calculatedConsistencyRatio);
+    
       setConsistencyRatio(calculatedConsistencyRatio);
-
+    
       if (calculatedConsistencyRatio > 0.1) {
         setErrorMessage('Consistency ratio is too high. Please review your priorities.');
       } else {
         setErrorMessage('');
       }
     };
+    
 
     // Obliczanie wyników parków na podstawie wag
     const calculateParkScores = () => {
@@ -474,18 +485,7 @@ const DashboardAdmin = () => {
 
         <button onClick={calculateParkScores}>Calculate Park Rankings</button>
 
-        {results.length > 0 && (
-          <div>
-            <h4>Results</h4>
-            <ul>
-              {results.map((result, index) => (
-                <li key={index}>
-                  {index + 1}. {result.p_name} - Score: {result.finalScore}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {results.length > 0 && <ResultsTable results={results} />}
       </div>
     );
   };
