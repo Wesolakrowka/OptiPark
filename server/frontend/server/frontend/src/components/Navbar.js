@@ -31,7 +31,7 @@ const Navbar = () => {
         <a onClick={() => scrollToSection('about')} href="#about">About Us</a>
         <a onClick={() => scrollToSection('services')} href="#services">Services</a>
         <a onClick={() => scrollToSection('contact')} href="#contact">Contact Us</a>
-        <button onClick={openModal} className="login-button">Login / Register</button>
+        <button onClick={openModal} className="login-button">Login </button>
       </div>
     </nav>
   );
