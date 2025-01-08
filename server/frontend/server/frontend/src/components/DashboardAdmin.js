@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
 import './DashboardAdmin.css';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardAdmin = () => {
   const [activePage, setActivePage] = useState('parks');
   const [parks, setParks] = useState([]);
   const [showNewParkModal, setShowNewParkModal] = useState(false);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Usuń token
+    navigate('/login'); // Przekieruj użytkownika na stronę logowania
+  };
   const [newPark, setNewPark] = useState({
     p_id: '',
     p_name: '',
@@ -292,27 +298,34 @@ const DashboardAdmin = () => {
   return (
     <div className="dashboard-admin-container">
       <aside className="sidebar">
-        <h2>Menu</h2>
-        <ul>
-          <li
-            onClick={() => setActivePage('parks')}
-            className={activePage === 'parks' ? 'active' : ''}
-          >
-            Parks
-          </li>
-          <li
-            onClick={() => setActivePage('study')}
-            className={activePage === 'study' ? 'active' : ''}
-          >
-            Create Study
-          </li>
-        </ul>
-      </aside>
+  <h2>Menu</h2>
+  <p>Test tekstu - widoczny w sidebarze?</p>
+  <ul>
+    <li
+      onClick={() => setActivePage('parks')}
+      className={activePage === 'parks' ? 'active' : ''}
+    >
+      Parks
+    </li>
+    <li
+      onClick={() => setActivePage('study')}
+      className={activePage === 'study' ? 'active' : ''}
+    >
+      Create Study
+    </li>
+  </ul>
+
+  {/* Przycisk Logout */}
+  <button className="logout-button" onClick={handleLogout}>
+    Logout
+  </button>
+</aside>
       <main className="main-content">
         {activePage === 'parks' ? <EditParks /> : <CreateStudy />}
       </main>
 
       {showNewParkModal && <NewParkModal />}
+      
     </div>
   );
 };

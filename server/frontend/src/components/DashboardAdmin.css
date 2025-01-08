@@ -285,4 +285,91 @@ input:focus {
 
 .park-item div button:hover {
   background-color: #e55a00; /* Slightly darker shade when hovering */
+}/* Create Study Section */
+.create-study {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-study h3,
+.create-study h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.create-study table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.create-study table th,
+.create-study table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.create-study table th {
+  background-color: #e7e7e7;
+  color: #555;
+}
+
+.create-study input[type="number"] {
+  width: 80px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.create-study .error-message {
+  color: red;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.create-study button {
+  padding: 10px 15px;
+  background-color: #e55a00;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.create-study button:hover {
+  background-color: #e55a00;
+}
+
+.create-study ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.create-study ul li {
+  margin: 5px 0;
+  color: #333;
+}
+
+.create-study .results-table {
+  margin-top: 20px;
+}
+.logout-button {
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
 }
