@@ -518,6 +518,7 @@ const DashboardAdmin = () => {
             Create Study
           </li>
         </ul>
+        
       </aside>
       <main className="main-content">
         {activePage === 'parks' ? <EditParks
