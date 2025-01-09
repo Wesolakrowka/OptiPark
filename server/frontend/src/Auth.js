@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importujemy useNavigate
 import axios from 'axios';
 import './Auth.css';
+import {useModal} from './context/ModalContext'
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); // Inicjalizacja useNavigate
+  const { closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,8 @@ const Auth = () => {
         u_password: password,
       });
       console.log(response.data);
-      alert('Login successful');
+      closeModal();
+      // alert('Login successful');
 
       // Przekierowanie na Dashboard
       navigate('/dashboard_admin');
